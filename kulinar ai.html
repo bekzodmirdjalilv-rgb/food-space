@@ -1,0 +1,814 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Food Space AI | Умный кулинарный ассистент</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #fafaf9;
+            color: #1c1917;
+        }
+
+        /* Header / Шапка */
+        header {
+            background: #ffffff;
+            border-bottom: 1px solid #e7e5e4;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-container {
+            max-width: 1240px;
+            margin: 0 auto;
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .logo-icon {
+            background: #f97316;
+            color: white;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            font-weight: bold;
+        }
+
+        .logo-text {
+            font-size: 1.25rem;
+            font-weight: 800;
+            color: #1c1917;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #57534e;
+            font-size: 0.88rem;
+            font-weight: 600;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover, .nav-links a.active {
+            color: #ea580c;
+        }
+
+        .btn-create-recipe {
+            background: #ffedd5;
+            color: #9a3412;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 0.85rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: background 0.2s;
+        }
+
+        .btn-create-recipe:hover {
+            background: #fed7aa;
+        }
+
+        /* Основной контейнер */
+        .container {
+            max-width: 1240px;
+            margin: 0 auto;
+            padding: 24px 20px;
+        }
+
+        /* Двухколоночный макет Hero */
+        .hero-section {
+            background: #ffffff;
+            border-radius: 24px;
+            padding: 24px;
+            display: grid;
+            grid-template-columns: 1fr 480px;
+            gap: 24px;
+            margin-bottom: 32px;
+            border: 1px solid #e7e5e4;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+        }
+
+        /* СЛЕВА: Галерея с фото и плашками-советами */
+        .hero-left {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: #fff7ed;
+            color: #c2410c;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            width: fit-content;
+        }
+
+        .hero-title {
+            font-size: 1.8rem;
+            line-height: 1.25;
+            font-weight: 800;
+            color: #1c1917;
+        }
+
+        /* Сетка фото слева */
+        .preview-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-top: 8px;
+        }
+
+        .preview-card {
+            position: relative;
+            border-radius: 16px;
+            overflow: hidden;
+            height: 150px;
+        }
+
+        .preview-card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .overlay-badge {
+            position: absolute;
+            bottom: 8px;
+            left: 8px;
+            background: rgba(0, 0, 0, 0.65);
+            backdrop-filter: blur(4px);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 8px;
+            font-size: 0.72rem;
+            font-weight: 600;
+        }
+
+        .tip-box {
+            background: #fff7ed;
+            border-left: 4px solid #f97316;
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            color: #7c2d12;
+            line-height: 1.4;
+        }
+
+        /* СПРАВА: Форма/Чат ИИ */
+        .hero-right {
+            background: #fafaf9;
+            border-radius: 20px;
+            padding: 20px;
+            border: 1px solid #e7e5e4;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .form-group {
+            margin-bottom: 14px;
+        }
+
+        .form-label {
+            font-size: 0.75rem;
+            font-weight: 800;
+            color: #78716c;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 6px;
+            display: block;
+        }
+
+        .input-text {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1px solid #d6d3d1;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            outline: none;
+            background: #ffffff;
+        }
+
+        .input-text:focus {
+            border-color: #f97316;
+        }
+
+        /* Кнопки выбора целей */
+        .goals-row {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 6px;
+        }
+
+        .goal-btn {
+            background: #ffffff;
+            border: 1px solid #d6d3d1;
+            color: #44403c;
+            padding: 8px 4px;
+            border-radius: 10px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.2s;
+        }
+
+        .goal-btn.active {
+            background: #ffedd5;
+            border-color: #f97316;
+            color: #c2410c;
+        }
+
+        /* Кнопки Игнорировать */
+        .tags-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .ignore-btn {
+            background: #ffffff;
+            border: 1px solid #e7e5e4;
+            color: #78716c;
+            padding: 6px 10px;
+            border-radius: 8px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .ignore-btn.active {
+            background: #fee2e2;
+            border-color: #f87171;
+            color: #991b1b;
+        }
+
+        .btn-ai-submit {
+            width: 100%;
+            background: #f97316;
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: background 0.2s;
+        }
+
+        .btn-ai-submit:hover {
+            background: #ea580c;
+        }
+
+        /* Результат ИИ */
+        .ai-result-panel {
+            background: #ffffff;
+            border-radius: 16px;
+            padding: 16px;
+            margin-top: 14px;
+            display: none;
+            border: 1px solid #ffedd5;
+            box-shadow: 0 4px 12px rgba(249, 115, 22, 0.08);
+        }
+
+        .result-content {
+            display: flex;
+            gap: 14px;
+        }
+
+        .result-img {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 12px;
+            flex-shrink: 0;
+        }
+
+        /* Выделенный блок КБЖУ */
+        .kbzhu-block {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 6px;
+            margin: 10px 0;
+            background: #fff7ed;
+            padding: 8px;
+            border-radius: 12px;
+            border: 1px dashed #fed7aa;
+        }
+
+        .kbzhu-item {
+            text-align: center;
+            background: #ffffff;
+            padding: 6px 2px;
+            border-radius: 8px;
+            border: 1px solid #ffedd5;
+        }
+
+        .kbzhu-val {
+            font-size: 0.85rem;
+            font-weight: 800;
+            color: #c2410c;
+            display: block;
+        }
+
+        .kbzhu-label {
+            font-size: 0.65rem;
+            font-weight: 700;
+            color: #78716c;
+            text-transform: uppercase;
+        }
+
+        /* Кнопка и блок с подробным рецептом */
+        .btn-details {
+            background: #ffedd5;
+            color: #9a3412;
+            border: 1px solid #fed7aa;
+            width: 100%;
+            padding: 8px;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 8px;
+            transition: all 0.2s;
+        }
+
+        .btn-details:hover {
+            background: #fed7aa;
+        }
+
+        .recipe-details-box {
+            display: none;
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px dashed #e7e5e4;
+            font-size: 0.82rem;
+            color: #44403c;
+            line-height: 1.5;
+        }
+
+        .recipe-details-box h5 {
+            font-size: 0.85rem;
+            color: #1c1917;
+            margin-bottom: 6px;
+        }
+
+        .recipe-details-box ol {
+            padding-left: 18px;
+            margin-bottom: 10px;
+        }
+
+        .recipe-details-box li {
+            margin-bottom: 4px;
+        }
+
+        /* Секция «Сейчас готовим» (Сторис) */
+        .stories-section {
+            margin-bottom: 32px;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .section-title {
+            font-size: 1.3rem;
+            font-weight: 800;
+            color: #1c1917;
+        }
+
+        .stories-scroll {
+            display: flex;
+            gap: 14px;
+            overflow-x: auto;
+            padding-bottom: 8px;
+        }
+
+        .story-card {
+            flex: 0 0 90px;
+            text-align: center;
+            cursor: pointer;
+        }
+
+        .story-avatar {
+            width: 76px;
+            height: 76px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid #f97316;
+            padding: 2px;
+            background: #fff;
+            margin: 0 auto 6px;
+            transition: transform 0.2s;
+        }
+
+        .story-card:hover .story-avatar {
+            transform: scale(1.05);
+        }
+
+        .story-name {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #44403c;
+        }
+
+        /* Нижняя галерея фото */
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+        }
+
+        .gallery-card {
+            background: #ffffff;
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid #e7e5e4;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .gallery-card:hover {
+            transform: translateY(-3px);
+        }
+
+        .gallery-card img {
+            width: 100%;
+            height: 140px;
+            object-fit: cover;
+        }
+
+        .gallery-card-info {
+            padding: 12px;
+        }
+
+        .gallery-card-title {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: #1c1917;
+            margin-bottom: 4px;
+        }
+
+        .gallery-card-meta {
+            font-size: 0.75rem;
+            color: #f97316;
+            font-weight: 700;
+        }
+
+        @media (max-width: 900px) {
+            .hero-section { grid-template-columns: 1fr; }
+            .gallery-grid { grid-template-columns: repeat(2, 1fr); }
+            .nav-links { display: none; }
+        }
+
+        @media (max-width: 600px) {
+            .gallery-grid { grid-template-columns: 1fr; }
+            .preview-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Шапка -->
+    <header>
+        <div class="header-container">
+            <a href="#" class="logo">
+                <div class="logo-icon">🍳</div>
+                <div class="logo-text">Food Space <span style="font-size:0.7rem; color:#f97316;">AI</span></div>
+            </a>
+
+            <ul class="nav-links">
+                <li><a href="#" class="active">Кухни мира</a></li>
+                <li><a href="#">Напитки</a></li>
+                <li><a href="#">Статьи</a></li>
+                <li><a href="#">Избранное</a></li>
+            </ul>
+
+            <button class="btn-create-recipe" onclick="scrollToAI()">✨ Создать блюдо</button>
+        </div>
+    </header>
+
+    <div class="container">
+
+        <!-- Секция Hero -->
+        <section class="hero-section" id="aiSection">
+            
+            <!-- СЛЕВА: Фото и советы -->
+            <div class="hero-left">
+                <div class="hero-badge">💡 Кулинарный помощник</div>
+                <h1 class="hero-title">Идеи блюд под ваши предпочтения</h1>
+                
+                <div class="preview-grid">
+                    <div class="preview-card">
+                        <img src="https://images.unsplash.com/photo-1590412200988-a436970781fa?auto=format&fit=crop&w=400&q=80" alt="Шакшука">
+                        <span class="overlay-badge">⏱️ 12 минут</span>
+                    </div>
+                    <div class="preview-card">
+                        <img src="https://images.unsplash.com/photo-1633964913295-ceb43826e7c9?auto=format&fit=crop&w=400&q=80" alt="Плов">
+                        <span class="overlay-badge">🔥 ~550 ккал</span>
+                    </div>
+                </div>
+
+                <div class="tip-box">
+                    <strong>💡 Совет шефа:</strong> Введите любое блюдо (например, <em>плов</em> или <em>салат</em>), выберите сытость и исключите нежелательные ингредиенты — ИИ сразу сгенерирует подробный пошаговый рецепт!
+                </div>
+            </div>
+
+            <!-- СПРАВА: ИИ Чат / Конструктор -->
+            <div class="hero-right">
+                <div>
+                    <div class="form-group">
+                        <label class="form-label">Что хотите приготовить?</label>
+                        <input type="text" id="aiIngredients" class="input-text" placeholder="Введите: плов, паста, омлет, курица...">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Формат блюда</label>
+                        <div class="goals-row">
+                            <button class="goal-btn active" onclick="selectGoal(this, 'nutritious')">⚡ Сытно</button>
+                            <button class="goal-btn" onclick="selectGoal(this, 'light')">🌱 Лёгкое</button>
+                            <button class="goal-btn" onclick="selectGoal(this, 'any')">⚪ Любое</button>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Игнорировать в рецепте</label>
+                        <div class="tags-row">
+                            <button class="ignore-btn" onclick="toggleIgnore(this)">🚫 Без лука</button>
+                            <button class="ignore-btn" onclick="toggleIgnore(this)">🚫 Без кинзы</button>
+                            <button class="ignore-btn" onclick="toggleIgnore(this)">🚫 Без острых специй</button>
+                            <button class="ignore-btn" onclick="toggleIgnore(this)">🚫 Без молочки</button>
+                        </div>
+                    </div>
+                </div>
+
+                <button class="btn-ai-submit" onclick="generateRecipe()">✨ Подобрать рецепт</button>
+
+                <!-- Панель результата -->
+                <div class="ai-result-panel" id="aiResult">
+                    <div class="result-content">
+                        <img id="resImg" class="result-img" src="" alt="Блюдо">
+                        <div style="flex-grow: 1;">
+                            <h4 id="resTitle" style="color: #1c1917; font-size:1rem; font-weight:800;"></h4>
+                            <p id="resTag" style="font-size:0.75rem; font-weight:700; color:#ea580c; margin-top:2px;"></p>
+                            
+                            <!-- КБЖУ -->
+                            <div class="kbzhu-block">
+                                <div class="kbzhu-item">
+                                    <span class="kbzhu-val" id="valKcal">0</span>
+                                    <span class="kbzhu-label">ккал</span>
+                                </div>
+                                <div class="kbzhu-item">
+                                    <span class="kbzhu-val" id="valB">0г</span>
+                                    <span class="kbzhu-label">Белки</span>
+                                </div>
+                                <div class="kbzhu-item">
+                                    <span class="kbzhu-val" id="valZh">0г</span>
+                                    <span class="kbzhu-label">Жиры</span>
+                                </div>
+                                <div class="kbzhu-item">
+                                    <span class="kbzhu-val" id="valU">0г</span>
+                                    <span class="kbzhu-label">Угл.</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <p id="resDesc" style="font-size:0.78rem; color:#57534e; line-height:1.3; margin-top:8px;"></p>
+
+                    <button class="btn-details" onclick="toggleDetails()">📖 Подробный рецепт приготовления</button>
+
+                    <!-- Выпадающий подробный рецепт -->
+                    <div class="recipe-details-box" id="detailsBox">
+                        <h5>📋 Пошаговый рецепт:</h5>
+                        <ol id="stepsList">
+                            <!-- Шаги подставляются через JS -->
+                        </ol>
+                        <p id="chefSecret" style="font-style: italic; color: #c2410c; background: #fff7ed; padding: 6px 10px; border-radius: 6px;"></p>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- Секция «Сейчас готовим» -->
+        <section class="stories-section">
+            <div class="section-header">
+                <h2 class="section-title">Сейчас готовим</h2>
+            </div>
+            <div class="stories-scroll">
+                <div class="story-card" onclick="quickSelect('Плов')">
+                    <img src="https://images.unsplash.com/photo-1633964913295-ceb43826e7c9?auto=format&fit=crop&w=200&q=80" class="story-avatar">
+                    <div class="story-name">Плов</div>
+                </div>
+                <div class="story-card" onclick="quickSelect('Шакшука')">
+                    <img src="https://images.unsplash.com/photo-1590412200988-a436970781fa?auto=format&fit=crop&w=200&q=80" class="story-avatar">
+                    <div class="story-name">Шакшука</div>
+                </div>
+                <div class="story-card" onclick="quickSelect('Лагман')">
+                    <img src="https://images.unsplash.com/photo-1569718212165-3a8278d5f624?auto=format&fit=crop&w=200&q=80" class="story-avatar">
+                    <div class="story-name">Лагман</div>
+                </div>
+                <div class="story-card" onclick="quickSelect('Паста')">
+                    <img src="https://images.unsplash.com/photo-1546549032-9571cd6b27df?auto=format&fit=crop&w=200&q=80" class="story-avatar">
+                    <div class="story-name">Паста</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Секция с фото снизу -->
+        <section>
+            <div class="section-header">
+                <h2 class="section-title">Вдохновение на сегодня</h2>
+            </div>
+            <div class="gallery-grid">
+                <div class="gallery-card" onclick="quickSelect('Плов')">
+                    <img src="https://images.unsplash.com/photo-1633964913295-ceb43826e7c9?auto=format&fit=crop&w=500&q=80">
+                    <div class="gallery-card-info">
+                        <div class="gallery-card-title">Традиционный Плов</div>
+                        <div class="gallery-card-meta">🔥 580 ккал • Б: 26г • Ж: 24г • У: 62г</div>
+                    </div>
+                </div>
+                <div class="gallery-card" onclick="quickSelect('Шакшука')">
+                    <img src="https://images.unsplash.com/photo-1590412200988-a436970781fa?auto=format&fit=crop&w=500&q=80">
+                    <div class="gallery-card-info">
+                        <div class="gallery-card-title">Шакшука с овощами</div>
+                        <div class="gallery-card-meta">🔥 310 ккал • Б: 15г • Ж: 19г • У: 16г</div>
+                    </div>
+                </div>
+                <div class="gallery-card" onclick="quickSelect('Лагман')">
+                    <img src="https://images.unsplash.com/photo-1569718212165-3a8278d5f624?auto=format&fit=crop&w=500&q=80">
+                    <div class="gallery-card-info">
+                        <div class="gallery-card-title">Домашний Лагман</div>
+                        <div class="gallery-card-meta">🔥 490 ккал • Б: 22г • Ж: 18г • У: 54г</div>
+                    </div>
+                </div>
+                <div class="gallery-card" onclick="quickSelect('Брускетта')">
+                    <img src="https://images.unsplash.com/photo-1572695157366-5e585ab2b69f?auto=format&fit=crop&w=500&q=80">
+                    <div class="gallery-card-info">
+                        <div class="gallery-card-title">Хрустящая Брускетта</div>
+                        <div class="gallery-card-meta">🔥 240 ккал • Б: 8г • Ж: 10г • У: 28г</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+    <script>
+        let currentGoal = 'nutritious';
+
+        function selectGoal(btn, goal) {
+            document.querySelectorAll('.goal-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            currentGoal = goal;
+        }
+
+        function toggleIgnore(btn) {
+            btn.classList.toggle('active');
+        }
+
+        function scrollToAI() {
+            document.getElementById('aiSection').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function quickSelect(name) {
+            document.getElementById('aiIngredients').value = name;
+            scrollToAI();
+            generateRecipe();
+        }
+
+        function toggleDetails() {
+            const box = document.getElementById('detailsBox');
+            box.style.display = (box.style.display === 'block') ? 'none' : 'block';
+        }
+
+        function generateRecipe() {
+            const query = document.getElementById('aiIngredients').value.trim();
+            const resultPanel = document.getElementById('aiResult');
+            const detailsBox = document.getElementById('detailsBox');
+
+            detailsBox.style.display = 'none';
+
+            const activeIgnores = Array.from(document.querySelectorAll('.ignore-btn.active'))
+                                      .map(b => b.textContent.replace('🚫 ', ''));
+
+            let ignoreText = activeIgnores.length > 0 ? ` (Без добавления: ${activeIgnores.join(', ')})` : '';
+
+            let titleName = query || "Авторское блюдо";
+            let desc = "";
+            let tag = "";
+            let img = "https://images.unsplash.com/photo-1498837167922-ddd27525d352?auto=format&fit=crop&w=400&q=80";
+
+            let kcal = 400, b = 20, zh = 15, u = 40;
+            let steps = [];
+            let secret = "";
+
+            if (currentGoal === 'nutritious') {
+                tag = "⚡ Сытный вариант";
+                kcal = 620; b = 32; zh = 26; u = 65;
+                desc = `Насыщенная версия "${titleName}" для восполнения энергии.${ignoreText}`;
+            } else if (currentGoal === 'light') {
+                tag = "🌱 Лёгкая версия";
+                kcal = 280; b = 16; zh = 10; u = 28;
+                desc = `Облегчённая адаптация "${titleName}" со свежими овощами.${ignoreText}`;
+            } else {
+                tag = "⚪ Классика";
+                kcal = 450; b = 22; zh = 18; u = 48;
+                desc = `Классический рецепт приготовления "${titleName}".${ignoreText}`;
+            }
+
+            // Динамическая генерация рецептов
+            if (query.toLowerCase().includes('плов')) {
+                img = "https://images.unsplash.com/photo-1633964913295-ceb43826e7c9?auto=format&fit=crop&w=400&q=80";
+                steps = [
+                    "Подготовьте мясо и нарежьте соломкой морковь.",
+                    "Обжарьте ингредиенты в казане до золотистой корочки.",
+                    "Засыпьте промытый рис и залейте водой на 1.5 см выше уровня.",
+                    "Томите на медленном огне 20-25 минут под закрытой крышкой."
+                ];
+                secret = "💡 Секрет: Добавьте щепотку зиры в самом конце для глубокого аромата.";
+            } else if (query.toLowerCase().includes('шакшука')) {
+                img = "https://images.unsplash.com/photo-1590412200988-a436970781fa?auto=format&fit=crop&w=400&q=80";
+                steps = [
+                    "Обжарьте томаты и сладкий перец на сковороде 5–7 минут.",
+                    "Сделайте небольшие углубления и аккуратно вбейте яйца.",
+                    "Готовьте на среднем огне, чтобы белок схватился, а желток остался жидким."
+                ];
+                secret = "💡 Секрет: Подавайте с тёплым хрустящим хлебом или питой.";
+            } else {
+                steps = [
+                    `Подготовьте свежие ингредиенты для "${titleName}".`,
+                    "Проведите термическую обработку основных компонентов на среднем огне.",
+                    "Приправьте по вкусу и украсьте свежей зеленью перед подачей."
+                ];
+                secret = "💡 Секрет: Подавайте блюдо сразу после приготовления горячим.";
+            }
+
+            document.getElementById('resTitle').textContent = titleName;
+            document.getElementById('resTag').textContent = tag;
+            document.getElementById('resDesc').textContent = desc;
+            document.getElementById('resImg').src = img;
+
+            document.getElementById('valKcal').textContent = kcal;
+            document.getElementById('valB').textContent = b + 'г';
+            document.getElementById('valZh').textContent = zh + 'г';
+            document.getElementById('valU').textContent = u + 'г';
+
+            // Наполнение пошаговых инструкций
+            const stepsList = document.getElementById('stepsList');
+            stepsList.innerHTML = '';
+            steps.forEach(step => {
+                const li = document.createElement('li');
+                li.textContent = step;
+                stepsList.appendChild(li);
+            });
+            document.getElementById('chefSecret').textContent = secret;
+
+            resultPanel.style.display = 'block';
+        }
+    </script>
+</body>
+</html>
